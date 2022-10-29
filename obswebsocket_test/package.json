@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "obs-websocket-js": "^5.0.2"
-  },
-  "scripts": {
-    "start": "node main.js"
-  }
-}
