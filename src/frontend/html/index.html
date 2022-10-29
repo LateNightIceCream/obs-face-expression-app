@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/pico.min.css">
+    <link rel="stylesheet" href="../css/sub.css">
+    <script src="../index.js" type="module"></script>
+    <title>OBS Face Expression Tool</title>
+  </head>
+  <body>
+    <main class="container">
+      <hgroup>
+        <h1>OBS Face Expression Tool</h1>
+        <h2>quite amazing</h2>
+      </hgroup>
+  <article> <!--data-theme="dark">-->
+    <h2>Your beautiful face</h2>
+
+    <div id="video-container">
+      <video id="video" playsinline class="video"></video>
+      <canvas id="canvas" class="canvas" style=""></canvas>
+    </div>
+
+  <footer>
+    Click the video to pause / resume detection
+  </footer>
+
+  </article>
+
+
+  <article>
+    <hgroup>
+    <h2>Settings</h2>
+    <h3>Set up OBS & face expression parameters</h3>
+    </hgroup>
+    <!-- Primary -->
+    <details>
+      <summary>OBS Websocket Setup</summary>
+      <form>
+        <!-- Grid -->
+        <div class="grid">
+
+          <!-- Markup example 1: input is inside label -->
+          <label for="firstname">
+            Websocket IP Address
+            <input type="text" id="firstname" name="firstname" placeholder="192.32.34.55" required>
+          </label>
+
+          <label for="lastname">
+            Websocket Port
+            <input type="text" id="lastname" name="lastname" placeholder="4455" required>
+          </label>
+        </div>
+
+        <!-- Markup example 2: input is after label -->
+        <label for="password">Websocket Password</label>
+        <input type="password" id="obs-password" name="password" placeholder="password" required>
+
+        <!--
+        <label for="terms">
+          <input type="checkbox" id="terms" name="terms">
+          Save my settings
+        </label>
+        -->
+
+        <!-- Button
+        <button type="button" class="primary">Apply</button>
+        -->
+        <!-- Range slider -->
+      </form>
+    </details>
+
+    <!-- Secondary -->
+    <details>
+      <summary>Face Detection Setup</summary>
+
+      <label for="score-slider">Minimum Score
+        <div class="slider-grid">
+          <output class="slider-output-value">0.50</output>
+          <input type="range" min="0" max="1" value="0.50" id="score-slider" step="0.01" name="score-slider" oninput="this.previousElementSibling.value=parseFloat(this.value).toFixed(2).toString()">
+        </div>
+      </label>
+
+      <label for="timeout-slider">Refresh Time (ms)
+        <div class="slider-grid">
+          <output class="slider-output-value">333</output>
+          <input type="range" min="100" max="2000" value="333" id="timeout-slider" step="1" name="timeout-slider" oninput="this.previousElementSibling.value=this.value">
+        </div>
+      </label>
+
+    </details>
+
+      <button type="button" class="primary outline">Apply</button>
+
+    <footer>
+      <details>
+        <summary>Log</summary>
+        <div id="log" style="overflow-y: scroll; height: 16.5rem"></div>
+      </details>
+    </footer>
+
+  </article>
+
+
+    </main>
+
+
+
+
+  </body>
+</html>
