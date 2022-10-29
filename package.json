@@ -1,0 +1,26 @@
+{
+  "name": "facenew_local",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "gulp": "gulp",
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@picocss/pico": "^1.5.6",
+    "@tensorflow/tfjs-node": "^3.21.1",
+    "@vladmandic/face-api": "^1.7.4",
+    "electron": "^21.1.1",
+    "fs": "^0.0.1-security",
+    "live-server": "^1.2.2",
+    "obs-websocket-js": "^5.0.2",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}

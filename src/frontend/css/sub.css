@@ -1,0 +1,21 @@
+.slider-grid {
+  display: grid;
+  grid-template-columns: 38fr 62%;
+  grid-template-rows: 2fr 32px;
+  justify-items: stretch
+  align-items: stretch
+}
+
+.canvas {
+  z-index: 10;
+  /*background-color: rgba(255, 0, 0, 0.2);*/
+}
+
+.video, .canvas {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+#video-container {
+  display: grid;
+}
