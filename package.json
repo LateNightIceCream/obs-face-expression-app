@@ -5,8 +5,10 @@
   "main": "src/main.js",
   "scripts": {
     "gulp": "gulp",
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron-forge start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "author": "",
   "license": "ISC",
@@ -14,13 +16,37 @@
     "@picocss/pico": "^1.5.6",
     "@tensorflow/tfjs-node": "^3.21.1",
     "@vladmandic/face-api": "^1.7.4",
-    "electron": "^21.1.1",
+    "electron-squirrel-startup": "^1.0.0",
     "fs": "^0.0.1-security",
     "live-server": "^1.2.2",
     "obs-websocket-js": "^5.0.2",
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0",
+    "@electron-forge/maker-deb": "^6.0.0",
+    "@electron-forge/maker-rpm": "^6.0.0",
+    "@electron-forge/maker-squirrel": "^6.0.0",
+    "@electron-forge/maker-zip": "^6.0.0",
+    "electron": "^21.2.2",
     "gulp": "^4.0.2"
+  },
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "authors": "YOU",
+            "iconUrl": "https://your_site/favicon.ico",
+            "exe": "obsface.exe",
+            "name": "bingo bongo"
+          },
+          "platforms": [
+            "windows"
+          ]
+        }
+      ]
+    }
   }
 }

@@ -54,30 +54,21 @@
           <!-- Markup example 1: input is inside label -->
           <label for="firstname">
             Websocket IP Address
-            <input type="text" id="firstname" name="firstname" placeholder="192.32.34.55" required>
+            <input type="text" id="obs-ip-input" name="firstname" placeholder="192.32.34.55" required>
           </label>
 
           <label for="lastname">
             Websocket Port
-            <input type="text" id="lastname" name="lastname" placeholder="4455" required>
+            <input type="text" id="obs-port-input" name="lastname" placeholder="4455" required>
           </label>
         </div>
 
         <!-- Markup example 2: input is after label -->
         <label for="password">Websocket Password</label>
-        <input type="password" id="obs-password" name="password" placeholder="password" required>
+        <input type="password" id="obs-password-input" name="password" placeholder="password" required>
 
-        <!--
-        <label for="terms">
-          <input type="checkbox" id="terms" name="terms">
-          Save my settings
-        </label>
-        -->
 
-        <!-- Button
-        <button type="button" class="primary">Apply</button>
-        -->
-        <!-- Range slider -->
+      <span id="settings-obs-connect-button" role="button">Connect</span>
       </form>
     </details>
 
@@ -99,16 +90,19 @@
         </div>
       </label>
 
-      <label for="threshold-slider">Refresh Time (ms)
+      <label for="threshold-slider">Detection Threshold
         <div class="slider-grid">
           <output class="slider-output-value">1</output>
           <input type="range" min="1" max="10" value="1" id="threshold-slider" step="1" name="threshold-slider" oninput="this.previousElementSibling.value=this.value">
         </div>
       </label>
 
+      <!-- <a id = "settings-face-detection-apply-button" href="" role="button">Apply</a> -->
+      <span id="settings-face-detection-apply-button" role="button">Apply</span>
+
     </details>
 
-      <button type="button" class="primary outline" id="settings-apply-button">Apply</button>
+      <!-- <button type="button" class="primary outline" id="settings-apply-button">Apply</button> -->
 
     <footer>
       <details>

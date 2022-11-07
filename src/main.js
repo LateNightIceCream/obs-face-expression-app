@@ -4,8 +4,10 @@ const path = require('path')
 
 const obsManager = new OBSManager();
 
+let win;
+
 const createWindow = function () {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width:  800,
     height: 600,
     webPreferences: {
@@ -15,6 +17,10 @@ const createWindow = function () {
 
   ipcMain.on('client-expression-changed', (event, expression) => {
     onClientExpressionChanged(expression);
+  });
+
+  ipcMain.on('obs-connection-settings-changed', (event, settings) => {
+    onClientObsConnectionSettingsChanged(settings);
   });
 
   win.loadFile('./src/frontend/index.html');
@@ -28,6 +34,29 @@ async function onClientExpressionChanged(expression) {
 }
 
 
+async function sendObsConnectionError(err) {
+  console.log(err.message);
+  win.webContents.send('obs-connection-error', err.message);
+}
+
+
+async function onClientObsConnectionSettingsChanged(settings) {
+  await connectToObs(settings, onError = sendObsConnectionError);
+}
+
+// TODO: no return value or error thrown when connection failed? How would you notify the client about a connection error (e.g. wrong credentials)?
+async function connectToObs(settings, onError=function(err){}) {
+  let ret = await obsManager.connect({
+    ip: settings.ip,
+    port: settings.port,
+    password: settings.password
+  });
+  console.log('------');
+  console.log(ret);
+  console.log('------');
+}
+
+
 app.whenReady().then( async () => {
   createWindow();
   // read OBS settings and face settings from file
@@ -35,12 +64,14 @@ app.whenReady().then( async () => {
   // update face settings via ipc
 
   // update OBS settings
-
-  await obsManager.connect({
+  settings = {
     ip: '192.168.43.55',
     port: '4455',
     password: '8wcbSnBF3Al9qQgQ'
-  });
+  };
+
+  await connectToObs(settings, onError = sendObsConnectionError);
+
 });
 
 app.on('window-all-closed', () => {

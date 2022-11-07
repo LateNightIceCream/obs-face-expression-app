@@ -10,7 +10,11 @@ const settingInputs = {
   scoreSlider:  document.getElementById('score-slider'),
   refreshTimeSlider: document.getElementById('refreshtime-slider'),
   thresholdSlider: document.getElementById('threshold-slider'),
-  applyButton: document.getElementById('settings-apply-button'),
+  applyButton: document.getElementById('settings-face-detection-apply-button'),
+  obsConnectButton: document.getElementById('settings-obs-connect-button'),
+  obsIpField: document.getElementById('obs-ip-input'),
+  obsPortField: document.getElementById('obs-port-input'),
+  obsPasswordField: document.getElementById('obs-password-input'),
   webcamDropDown: document.getElementById('webcam-dropdown'),
   webcamList: document.getElementById('webcam-list'),
 }
@@ -30,7 +34,11 @@ async function main() {
 
   app.cameraDimensions = { x: 400, y: 200 };
 
-
+  window.electronAPI.handleObsConnectionError((event, message) => {
+    console.log('hello?');
+    console.log(message);
+    alert(message);
+  });
 
   /*video.oncanplay = function () {
     app.pause();
@@ -79,14 +87,27 @@ function clearList(element) {
   }
 }
 
-function applySettings() {
-  app.detectionMinScore = parseFloat(this.value);
-  app.detectionRefreshTime = parseInt(this.value);
-  // ipc communicate
+function applyFaceSettings() {
+  app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
+  app.detectionRefreshTime = parseInt(settingInputs.refreshTimeSlider.value);
+  detection_threshold = parseInt(settingInputs.thresholdSlider);
+}
+
+function getObsConnectionSettings() {
+  return {
+    ip: settingInputs.obsIpField.value,
+    port: settingInputs.obsPortField.value,
+    password: settingInputs.obsPasswordField.value,
+  };
 }
 
 settingInputs.applyButton.onclick = function () {
-  applySettings();
+  applyFaceSettings();
+};
+
+settingInputs.obsConnectButton.onclick = function () {
+  let settings = getObsConnectionSettings();
+  window.electronAPI.sendObsConnectionSettings(settings);
 };
 
 settingInputs.webcamDropDown.onclick = function () {
@@ -102,6 +123,8 @@ document.addEventListener('expression-changed', () => { // TODO: pass the expres
     detections = 0;
   }
 });
+
+
 
 // start processing as soon as page is loaded
 window.onload = main;
