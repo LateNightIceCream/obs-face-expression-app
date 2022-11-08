@@ -1,29 +1,58 @@
 {
-  "name": "facenew_local",
+  "name": "obs-face-expression-app",
   "version": "1.0.0",
   "description": "",
   "main": "src/main.js",
+  "build": {
+    "appId": "obs-face-expression-app",
+    "asar": true,
+    "asarUnpack": [
+      "src/overlays/**",
+      "resources/json/**"
+    ],
+    "win": {
+      "icon": "resources/icon/icon.png"
+    },
+    "linux": {
+      "target": "deb",
+      "synopsis": "A chatbot for Glimesh.tv",
+      "maintainer": "LateNightIceCream",
+      "vendor": "LateNightIceCream",
+      "executableName": "obs-face-expresion-app",
+      "icon": "resources/icon/icon.png"
+    },
+    "directories": {
+      "buildResources": "resources/icon"
+    },
+    "files": [
+      "!docs/*",
+      "!dist/*",
+      "!@types/*",
+      "!lib/*",
+      "!scripts/*"
+    ]
+  },
   "scripts": {
-    "gulp": "gulp",
-    "start": "electron-forge start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "gulp": "gulp",
+    "dev": "tsc --watch",
+    "start": "electron .",
+    "build": "tsc --project tsconfig.production.json && tsc && npx tailwindcss -c ./tailwind.config.js -o ./src/output.css -i ./src/styles.css",
+    "build:exe": "electron-builder build  --win --publish never",
+    "build:linux": "electron-builder build --linux --publish never"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@picocss/pico": "^1.5.6",
-    "@tensorflow/tfjs-node": "^3.21.1",
-    "@vladmandic/face-api": "^1.7.4",
     "electron-squirrel-startup": "^1.0.0",
     "fs": "^0.0.1-security",
-    "live-server": "^1.2.2",
     "obs-websocket-js": "^5.0.2",
     "path": "^0.12.7"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0",
+    "electron-builder": "^23.6.0",
     "@electron-forge/maker-deb": "^6.0.0",
     "@electron-forge/maker-rpm": "^6.0.0",
     "@electron-forge/maker-squirrel": "^6.0.0",
@@ -31,6 +60,7 @@
     "electron": "^21.2.2",
     "gulp": "^4.0.2"
   },
+
   "config": {
     "forge": {
       "makers": [

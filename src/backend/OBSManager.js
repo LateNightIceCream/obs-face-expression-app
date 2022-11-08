@@ -69,10 +69,11 @@ OBSManager.prototype.connect = async function (options) {
     console.log(`Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion})`)
 
     await this.postConnectionInitialSetup();
-
+    return `Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion}`
   }
   catch (error) {
     console.error('Failed to connect', error.code, error.message);
+    return 'Failed to connect: ' + error.code + ' ' + error.message;
   }
 };
 

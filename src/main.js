@@ -1,8 +1,14 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { OBSManager } = require('./backend/OBSManager.js')
-const path = require('path')
+const { OBSManager } = require('./backend/OBSManager.js');
+const { CacheStore } = require('./backend/CacheStore.js');
+const path = require('path');
+
+const appData = getAppDataPath();
+console.log(appData);
 
 const obsManager = new OBSManager();
+const cacheStore = new CacheStore(path.join(appData, 'obs-face-expression-cache.json'));
+console.log(cacheStore.path);
 
 let win;
 
@@ -35,12 +41,17 @@ async function onClientExpressionChanged(expression) {
 
 
 async function sendObsConnectionError(err) {
-  console.log(err.message);
-  win.webContents.send('obs-connection-error', err.message);
+  return win.webContents.send('obs-connection-error', err);
 }
 
+async function sendCacheSettings(settings) {
+  return win.webContents.send('update-from-cache-settings', settings);
+}
 
 async function onClientObsConnectionSettingsChanged(settings) {
+  await cacheStore.set('ip', settings.ip);
+  await cacheStore.set('port', settings.port);
+  await cacheStore.set('password', settings.password);
   await connectToObs(settings, onError = sendObsConnectionError);
 }
 
@@ -53,26 +64,28 @@ async function connectToObs(settings, onError=function(err){}) {
   });
   console.log('------');
   console.log(ret);
+  await sendObsConnectionError(ret);
   console.log('------');
 }
 
-
 app.whenReady().then( async () => {
-  createWindow();
+
+  createWindow(); // await?
+
+  // timeout needed to wait for the browser to load
+  // TODO： use signals for this
+  setTimeout(async function()  {
+    initFromCache();
+  }, 1000);
+
   // read OBS settings and face settings from file
 
   // update face settings via ipc
 
   // update OBS settings
-  settings = {
-    ip: '192.168.43.55',
-    port: '4455',
-    password: '8wcbSnBF3Al9qQgQ'
-  };
-
-  await connectToObs(settings, onError = sendObsConnectionError);
 
 });
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -85,4 +98,27 @@ app.on('settings-applied', (settings) => {
 
 });
 
-// OBS handler
+async function initFromCache() {
+  let obsSettings = {
+    ip: cacheStore.get('ip'),
+    port: cacheStore.get('port'),
+    password: cacheStore.get('password'),
+  };
+
+  let faceSettings = {
+
+  };
+
+  console.log('hello init from cache');
+
+  // TODO: create class for settings format
+  return sendCacheSettings({
+    obs: obsSettings,
+    face: faceSettings,
+  });
+
+}
+
+function getAppDataPath() {
+  return process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share");
+}

@@ -12,7 +12,7 @@
 
     <main class="container">
       <hgroup>
-        <h1>OBS Face Expression Tool</h1>
+        <h1 id = "app-title">OBS Face Expression Tool</h1>
         <h2>quite amazing</h2>
       </hgroup>
   <article> <!--data-theme="dark">-->
@@ -53,8 +53,9 @@
 
           <!-- Markup example 1: input is inside label -->
           <label for="firstname">
-            Websocket IP Address
-            <input type="text" id="obs-ip-input" name="firstname" placeholder="192.32.34.55" required>
+            Websocket IP Address<sup>1</sup>
+
+            <input  type="text" id="obs-ip-input" name="firstname" placeholder="192.32.34.55" required>
           </label>
 
           <label for="lastname">
@@ -67,8 +68,13 @@
         <label for="password">Websocket Password</label>
         <input type="password" id="obs-password-input" name="password" placeholder="password" required>
 
-
       <span id="settings-obs-connect-button" role="button">Connect</span>
+
+      <hr/>
+      <div class = "footnotes">
+        <p class = "footnote"><sup>1</sup>use square brackets for IPv6, e.g.  [2607:f0d0:1002:51::4]</p>
+      </div>
+
       </form>
     </details>
 

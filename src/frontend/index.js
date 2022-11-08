@@ -35,9 +35,17 @@ async function main() {
   app.cameraDimensions = { x: 400, y: 200 };
 
   window.electronAPI.handleObsConnectionError((event, message) => {
-    console.log('hello?');
     console.log(message);
     alert(message);
+  });
+
+  window.electronAPI.handleCacheSettingsInit((event, settings) => {
+    console.log('index.js!!');
+    console.log(settings);
+    settingInputs.obsIpField.value = settings.obs.ip;
+    settingInputs.obsPortField.value = settings.obs.port;
+    settingInputs.obsPasswordField.value = settings.obs.password;
+    // TODO: face settings
   });
 
   /*video.oncanplay = function () {
@@ -123,6 +131,7 @@ document.addEventListener('expression-changed', () => { // TODO: pass the expres
     detections = 0;
   }
 });
+
 
 
 

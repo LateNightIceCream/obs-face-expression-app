@@ -1,3 +1,11 @@
+#video-container {
+  display: grid;
+}
+
+#app-title {
+  font-style: italic;
+}
+
 .slider-grid {
   display: grid;
   grid-template-columns: 38fr 62%;
@@ -16,6 +24,6 @@
   grid-row: 1;
 }
 
-#video-container {
-  display: grid;
+.footnote {
+  color: var(--primary);
 }
