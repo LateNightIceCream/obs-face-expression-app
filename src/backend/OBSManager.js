@@ -2,6 +2,12 @@ const OBSWebSocket = require('obs-websocket-js').default;
 const {EventSubscription} = require('obs-websocket-js');
 const obs = new OBSWebSocket();
 
+/**
+ * Expressions enum object
+ * Used to list all possible expression and match source names
+ * TODO: make this global so it is accessible from main as well
+ * @type {{Neutral: string, Happy: string, Sad: string, Surprised: string, Fearful: string, Disgusted: string, Angry: string}}
+ */
 const FaceExpression = {
   Neutral: 'neutral',
   Happy: 'happy',
@@ -12,7 +18,11 @@ const FaceExpression = {
   Angry: 'angry'
 };
 
-
+/**
+ * Get the key of the FaceExpression object from a string
+ * @param {string} str
+ * @returns {string} the key for the FaceExpression object if it exists else null
+ */
 function getExpressionKeyFromString(str) {
   str = str.toLowerCase()
   let key = str.charAt(0).toUpperCase() + str.slice(1);
@@ -22,24 +32,56 @@ function getExpressionKeyFromString(str) {
   return key;
 }
 
-
+/**
+ * Class to handle the connection to OBS
+ * as well as setting source visibility based on a given expression
+ */
 class OBSManager {
   constructor () {
     this.eventSubscriptions = EventSubscription.All | EventSubscription.InputVolumeMeters;
-    this.connectionOptions = { // things the user can set
+
+    /**
+     * connection options set by the user
+     * @type {{id: string, port: string, password: string}}
+     */
+    this.connectionOptions = {
       ip: '',
       port: '',
       password: '',
     };
-    this.faceSceneName = 'FaceScene';
+
     this.currentExpression = null;
+
+    /**
+     * Name of the OBS scene that the manager acts on
+     * @type {string}
+     */
+    this.faceSceneName = 'FaceScene';
+
+    /**
+     * Array of all items in the OBS FaceScene (this.faceSceneName)
+     * including the non-relevant sources
+     * @type {array}
+     */
     this.faceSceneItems = [];
+
+    /**
+     * Object where every item is an OBS source from this.faceSceneItems
+     * whose scene name matches a key from FaceExpression
+     * so it's only the relevant scenes
+     * @type {object}
+     */
     this.faceSceneSourcesDict = {};
-    this.triggerScenes = [];
   }
 }
 
-
+/**
+ * Get the full OBS websocket address
+ * When using IPv6, the ip has to be in brackets ([])
+ * @param {string} ip OBS websocket ip
+ * @param {string} port OBS websocket port
+ * @returns {string} The websocket address for connecting to OBS
+ */
 OBSManager.prototype._getFullSocketAddress = function (ip, port) {
   return 'ws://' + ip + ':' + port;
 };
