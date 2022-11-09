@@ -32,7 +32,6 @@ class OBSManager {
       password: '',
     };
     this.faceSceneName = 'FaceScene';
-    this.currentSceneName = null;
     this.currentExpression = null;
     this.faceSceneItems = [];
     this.faceSceneSourcesDict = {};
@@ -43,12 +42,6 @@ class OBSManager {
 
 OBSManager.prototype._getFullSocketAddress = function (ip, port) {
   return 'ws://' + ip + ':' + port;
-};
-
-
-OBSManager.prototype.updateConnectionOptions = function (options) {
-
-
 };
 
 
@@ -79,14 +72,12 @@ OBSManager.prototype.connect = async function (options) {
 
 
 OBSManager.prototype.postConnectionInitialSetup = async function () {
-  this.setup_listeners();
   await this.getFaceSceneStructure();
   await this.disableAllInFaceScene();
 };
 
 
 OBSManager.prototype.getFaceSceneStructure = async function() {
-  this.currentSceneName = await this.getCurrentScene();
   this.faceSceneItems = await this.getFaceSceneItems();
   this.faceSceneSourcesDict = this.getFaceSceneSourcesDict();
 };
@@ -104,7 +95,7 @@ OBSManager.prototype.getFaceSceneSourcesDict = function() {
     {}
   );
   return result;
-}
+};
 
 
 OBSManager.prototype.getExpressionSourceFromKey = function(expressionKey) {
@@ -128,7 +119,7 @@ OBSManager.prototype.getExpressionSourceFromString = function(expression = 'happ
   key = getExpressionKeyFromString(expression);
   source = this.getExpressionSourceFromKey(key);
   return source;
-}
+};
 
 
 OBSManager.prototype.setCurrentExpression = async function(expression = 'happy') {
@@ -141,7 +132,7 @@ OBSManager.prototype.setCurrentExpression = async function(expression = 'happy')
   await this.disableAllInFaceScene();
   await this.showSource(source);
   this.currentExpression = FaceExpression[key];
-}
+};
 
 
 OBSManager.prototype.setSceneItemState = async function(sourceObject, enable) {
@@ -157,20 +148,6 @@ OBSManager.prototype.setSceneItemState = async function(sourceObject, enable) {
     console.log(error);
     console.log('error while trying to get current scene');
     return false;
-  }
-};
-
-
-OBSManager.prototype.getCurrentScene = async function() {
-  try {
-    const scene = await obs.call('GetCurrentProgramScene');
-    this.currentSceneName = scene.currentProgramSceneName;
-    return scene;
-  }
-  catch(error) {
-    console.log(error);
-    console.log('error while trying to get current scene');
-    return null;
   }
 };
 
@@ -210,38 +187,6 @@ OBSManager.prototype.disableAllInFaceScene = async function () {
 };
 
 
-OBSManager.prototype.setup_listeners = function () {
-  obs.on('CurrentProgramSceneChanged', this.onCurrentSceneChanged);
-};
-
-
-OBSManager.prototype.onCurrentSceneChanged = function (event) {
-  // disable / enable
-  this.currentSceneName = event.sceneName;
-  console.log('Current scene changed to')
-  console.log(event);
-};
-
-
 module.exports = {
   OBSManager,
 };
-
-/*async function main() {
-  obsman = new OBSManager();
-  await obsman.connect({
-    ip: '10.40.106.37',
-    port: '4455',
-    password: 'OoKCMr5Aa1QjqMFh'
-  });
-
-  //await obsman.showSource('surprised');
-  //await obsman.showExpression('HaPPy');
-  await obsman.setCurrentExpression('surprised');
-  await obsman.setCurrentExpression('aasd');
-  await obsman.setCurrentExpression(FaceExpression.Happy);
-  await obsman.setCurrentExpression(FaceExpression.Surprised);
-}
-
-main();
-*/
