@@ -23,7 +23,6 @@ class CacheStore {
      */
     async set(key, value) {
         this.cache[key] = value;
-      console.log(JSON.stringify(this.cache));
         return fs.writeFile(this.path, JSON.stringify(this.cache), function(error) {
           // TODO
         });
@@ -66,11 +65,12 @@ class CacheStore {
       await fs.readFile(this.path, (err, data) => {
         if (err) {
           // TODO create file??
-          console.log(err);
+          console.error(err);
           this.cache = {};
           return;
         }
         this.cache = JSON.parse(data);
+        console.log('cache file content: ');
         console.log(this.cache);
       });
   }

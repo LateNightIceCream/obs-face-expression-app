@@ -2,6 +2,7 @@ const OBSWebSocket = require('obs-websocket-js').default;
 const {EventSubscription} = require('obs-websocket-js');
 const obs = new OBSWebSocket();
 
+
 /**
  * Expressions enum object
  * Used to list all possible expression and match source names
@@ -18,6 +19,7 @@ const FaceExpression = {
   Angry: 'angry'
 };
 
+
 /**
  * Get the key of the FaceExpression object from a string
  * @param {string} str
@@ -32,6 +34,7 @@ function getExpressionKeyFromString(str) {
   return key;
 }
 
+
 /**
  * Class to handle the connection to OBS
  * as well as setting source visibility based on a given expression
@@ -39,6 +42,7 @@ function getExpressionKeyFromString(str) {
 class OBSManager {
   constructor () {
     this.eventSubscriptions = EventSubscription.All | EventSubscription.InputVolumeMeters;
+    this.rpcVersion = 1
 
     /**
      * connection options set by the user
@@ -75,6 +79,7 @@ class OBSManager {
   }
 }
 
+
 /**
  * Get the full OBS websocket address
  * When using IPv6, the ip has to be in brackets ([])
@@ -87,46 +92,76 @@ OBSManager.prototype._getFullSocketAddress = function (ip, port) {
 };
 
 
+/**
+ * Connect to OBS websocket
+ * @param {{ip: string, port: string, password: string}} options Connection options
+ * @returns Promise
+ */
 OBSManager.prototype.connect = async function (options) {
-  let ip = options.ip;
-  let port = options.port;
-  let password = options.password;
-  let socket_address = this._getFullSocketAddress(ip, port);
 
-  try {
-    const {
+  let socket_address = this._getFullSocketAddress(options.ip, options.port);
+  let successObject = {success: false, message: ''};
+
+  return new Promise((resolve, reject) => {
+    obs.connect(socket_address, options.password, {
+      eventSubscriptions: this.eventSubscriptions,
+      rpcVersion:         this.rpcVersion
+    })
+    .then((result) => {
+      const {
         obsWebSocketVersion,
         negotiatedRpcVersion
-    } = await obs.connect(socket_address, password, {
-      eventSubscriptions: this.eventSubscriptions,
-      rpcVersion: 1
+      } = result;
+
+      msg = `Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion})`
+
+      successObject = {success: true, message: msg};
+
+      return this._postConnectionInitialSetup();
+    })
+    .then((result) => {
+      resolve(successObject);
+    })
+    .catch((error) => {
+      console.error('Failed to connect', error.code, error.message);
+      reject(error);
     });
-    console.log(`Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion})`)
-
-    await this.postConnectionInitialSetup();
-    return `Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion}`
-  }
-  catch (error) {
-    console.error('Failed to connect', error.code, error.message);
-    return 'Failed to connect: ' + error.code + ' ' + error.message;
-  }
+  });
 };
 
 
-OBSManager.prototype.postConnectionInitialSetup = async function () {
-  await this.getFaceSceneStructure();
-  await this.disableAllInFaceScene();
+/**
+ * Called after connecting to OBS. Initializes scene item list and disables (hides) all sources
+ * @returns Promise
+ */
+OBSManager.prototype._postConnectionInitialSetup = async function () {
+  return new Promise((resolve, reject) => {
+    this.getSceneItems()
+        .then((items) => {
+          this.faceSceneItems = items;
+          this.faceSceneSourcesDict = this.getSourcesDictFromItems(this.faceSceneItems);
+          return this.disableAllInFaceScene();
+        })
+        .then(() => {
+          resolve(true);
+        })
+        .catch((error) => {
+          this.faceSceneItems = [];
+          this.faceSceneSourcesDict = {};
+          console.log('TODO!')
+          reject(error);
+        });
+  });
 };
 
 
-OBSManager.prototype.getFaceSceneStructure = async function() {
-  this.faceSceneItems = await this.getFaceSceneItems();
-  this.faceSceneSourcesDict = this.getFaceSceneSourcesDict();
-};
-
-
-OBSManager.prototype.getFaceSceneSourcesDict = function() {
-   let result = this.faceSceneItems.reduce(
+/**
+ * Called after connecting to OBS. Initializes scene items and disables all sources
+ * @param {{ip: string, port: string, password: string}} options Connection options
+ * @returns Promise
+ */
+OBSManager.prototype.getSourcesDictFromItems = function(faceSceneItems) {
+   let result = faceSceneItems.reduce(
     (dict, item, index) => {
       let key = getExpressionKeyFromString(item.sourceName);
       if (key == null) {
@@ -140,21 +175,111 @@ OBSManager.prototype.getFaceSceneSourcesDict = function() {
 };
 
 
+/**
+ * Disables (hides) all sources in the face scene
+ * @returns Promise
+ */
+OBSManager.prototype.disableAllInFaceScene = async function () {
+  let sceneItems = this.faceSceneItems;
+
+  if (!(Array.isArray(sceneItems) && sceneItems.length)) {
+    console.error('no face scene items to disable!');
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    Promise.all(sceneItems.map(item => this.hideSource(item)))
+           .then(() => {
+             resolve(true);
+           })
+           .catch((error) => {
+             console.error(error);
+             console.error('Something went wrong while trying to disable all items in the Face scene');
+             reject(error)
+           });
+  });
+};
+
+
+/**
+ * Sets the given expression (source) to visible and hides all other sources
+ * @param {string} expression expression to set visible
+ * @returns Promise
+ */
+OBSManager.prototype.setCurrentExpression = async function(expression = 'happy') {
+  let source = this.getExpressionSourceFromString(expression);
+  if (source == null) {
+    throw new Error('expression key not found: ' + key);
+  }
+
+  return new Promise((resolve, reject) => {
+    this.disableAllInFaceScene()
+      .then(() => {
+        this.showSource(source);
+        this.currentExpression = FaceExpression[key];
+        resolve(expression);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
+
+};
+
+
+/**
+ * Set the OBS source to enabled or disabled
+ * @param {TODO} sourceObject OBS source object to enable or disable
+ * @param {bool} enable enable or disable sourceObject
+ * @returns Promise<bool|Error> resolves to enable
+ */
+OBSManager.prototype.setSceneItemState = async function(sourceObject, enable) {
+  return new Promise((resolve, reject) => {
+    obs.call('SetSceneItemEnabled', {
+      sceneName: this.faceSceneName,
+      sceneItemId: sourceObject.sceneItemId,
+      sceneItemEnabled: enable
+    })
+    .then((response) => {
+      resolve(enable);
+    })
+    .catch((error) => {
+      console.error(error);
+      console.error('error while trying to set scene item state');
+      reject(error);
+    });
+  });
+};
+
+
+/**
+ * Gets all sources in the faces scene
+ * @param {string} sceneName Name of the OBS scene to get the sources of
+ * @return Promise<array|Error> resolves to array of scene items
+ */
+OBSManager.prototype.getSceneItems = async function() {
+  return new Promise((resolve, reject) => {
+    obs.call('GetSceneItemList', {sceneName: this.faceSceneName})
+       .then((response) => {
+         resolve(response.sceneItems);
+       })
+       .catch((error) => {
+         console.error(error);
+         result = []
+         reject(error);
+       });
+  });
+};
+
+
+// TODO: docs + rewrite?
+// maybe separate class
 OBSManager.prototype.getExpressionSourceFromKey = function(expressionKey) {
   if (!(expressionKey in this.faceSceneSourcesDict)) {
     return null;
   }
   return this.faceSceneSourcesDict[expressionKey];
-};
-
-
-OBSManager.prototype.showSource = async function(source) {
-  this.setSceneItemState(source, true);
-};
-
-
-OBSManager.prototype.hideSource = async function(source) {
-  this.setSceneItemState(source, false);
 };
 
 OBSManager.prototype.getExpressionSourceFromString = function(expression = 'happy') {
@@ -163,69 +288,13 @@ OBSManager.prototype.getExpressionSourceFromString = function(expression = 'happ
   return source;
 };
 
-
-OBSManager.prototype.setCurrentExpression = async function(expression = 'happy') {
-  source = this.getExpressionSourceFromString(expression);
-  if (source == null) {
-    console.log('key not found: ' + key);
-    return;
-  }
-
-  await this.disableAllInFaceScene();
-  await this.showSource(source);
-  this.currentExpression = FaceExpression[key];
+OBSManager.prototype.showSource = async function(source) {
+  return this.setSceneItemState(source, true);
 };
 
 
-OBSManager.prototype.setSceneItemState = async function(sourceObject, enable) {
-  try {
-    let response = await obs.call('SetSceneItemEnabled', {
-      sceneName: this.faceSceneName,
-      sceneItemId: sourceObject.sceneItemId,
-      sceneItemEnabled: enable
-    });
-    return true;
-  }
-  catch(error) {
-    console.log(error);
-    console.log('error while trying to get current scene');
-    return false;
-  }
-};
-
-
-OBSManager.prototype.getFaceSceneItems = async function() {
-  let result = [];
-  try {
-    const response = await obs.call('GetSceneItemList', {sceneName: this.faceSceneName});
-    result = response.sceneItems;
-  }
-  catch(error) {
-    console.log(error);
-    result = [];
-  }
-  return result;
-};
-
-
-OBSManager.prototype.disableAllInFaceScene = async function () {
-  //groupItems = await this.getFaceGroupItems();
-  let sceneItems = this.faceSceneItems;
-
-  if (!(Array.isArray(sceneItems) && sceneItems.length)) {
-    console.log('no face scene items to disable!');
-    return;
-  }
-
-  try {
-    for await (const item of sceneItems) {
-      this.hideSource(item);
-    }
-  }
-  catch(error) {
-    console.log(error);
-    console.log('Something went wrong while trying to disable all items in the Face scene');
-  }
+OBSManager.prototype.hideSource = async function(source) {
+  return this.setSceneItemState(source, false);
 };
 
 
