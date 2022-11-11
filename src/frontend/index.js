@@ -1,10 +1,8 @@
 import * as WebcamApp from './WebcamApp.js'
 
 let app;
-let detection_threshold = 1;
-let detections = 0;
+let detectionThreshold = 1;
 let videoInputs = [];
-
 
 const settingInputs = {
   scoreSlider:  document.getElementById('score-slider'),
@@ -96,9 +94,9 @@ function clearList(element) {
 }
 
 function applyFaceSettings() {
-  /*app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
+  app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
   app.detectionRefreshTime = parseInt(settingInputs.refreshTimeSlider.value);
-  detection_threshold = parseInt(settingInputs.thresholdSlider);*/
+  detectionThreshold = parseInt(settingInputs.thresholdSlider);
 }
 
 function getObsConnectionSettings() {
@@ -123,17 +121,16 @@ settingInputs.webcamDropDown.onclick = function () {
   loadWebcamDropDown();
 };
 
-document.addEventListener('expression-changed', () => { // TODO: pass the expression with the event somehow
-  detections += 1
-  if (detections >= detection_threshold) {
-    // TODO: ipc communicate with main
-    let expression = app.previousExpression; // see TODO above
-    window.electronAPI.sendExpression(expression);
-    detections = 0;
-  }
+
+document.addEventListener('expression-changed', () => {
 });
 
-
+document.addEventListener('expression-detected', () => {
+  if (app.currentExpressionDetectionCount == detectionThreshold) {
+    let expression = app.previousExpression;
+    window.electronAPI.sendExpression(expression);
+  }
+});
 
 
 // start processing as soon as page is loaded

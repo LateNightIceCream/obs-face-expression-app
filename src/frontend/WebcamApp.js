@@ -18,7 +18,9 @@ export class WebcamApp {
     this.videoDeviceId = null;
 
     this.previousExpression = null;
+    this.currentExpressionDetectionCount = 0;
     this.expressionChangedEvent = new CustomEvent('expression-changed');
+    this.expressionDetectedEvent = new CustomEvent('expression-detected');
   }
 
   initialize() {
@@ -194,10 +196,15 @@ WebcamApp.prototype.detectVideo = async function () {
 
       util.drawFace(this.canvas, result, faceBoxString);
 
+      this.currentExpressionDetectionCount += 1;
+
       if (this.previousExpression != currentExpressionStr) {
         this.previousExpression = currentExpressionStr;
+        this.currentExpressionDetectionCount = 1;
         document.dispatchEvent(this.expressionChangedEvent);
       }
+
+      document.dispatchEvent(this.expressionDetectedEvent);
 
       return util.delay(cooldown).then(() => {
         return this.detectVideo();
