@@ -96,7 +96,7 @@ function clearList(element) {
 function applyFaceSettings() {
   app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
   app.detectionRefreshTime = parseInt(settingInputs.refreshTimeSlider.value);
-  detectionThreshold = parseInt(settingInputs.thresholdSlider);
+  detectionThreshold = parseInt(settingInputs.thresholdSlider.value);
 }
 
 function getObsConnectionSettings() {
