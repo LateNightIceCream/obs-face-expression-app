@@ -36,7 +36,9 @@ const createWindow = function () {
 async function onClientExpressionChanged(expression) {
   console.log('EXPRESSION CHANGED: ' + expression);
   console.log(expression);
-  await obsManager.setCurrentExpression(expression);
+  if (obsManager.isConnected) {
+    await obsManager.setCurrentExpression(expression);
+  }
 }
 
 

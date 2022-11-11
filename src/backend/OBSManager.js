@@ -43,6 +43,7 @@ class OBSManager {
   constructor () {
     this.eventSubscriptions = EventSubscription.All | EventSubscription.InputVolumeMeters;
     this.rpcVersion = 1
+    this.isConnected = false;
 
     /**
      * connection options set by the user
@@ -113,6 +114,7 @@ OBSManager.prototype.connect = async function (options) {
         negotiatedRpcVersion
       } = result;
 
+      this.isConnected = true;
       msg = `Connected to server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion})`
 
       successObject = {success: true, message: msg};

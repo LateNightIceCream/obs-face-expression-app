@@ -96,9 +96,9 @@ function clearList(element) {
 }
 
 function applyFaceSettings() {
-  app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
+  /*app.detectionMinScore = parseFloat(settingInputs.scoreSlider.value);
   app.detectionRefreshTime = parseInt(settingInputs.refreshTimeSlider.value);
-  detection_threshold = parseInt(settingInputs.thresholdSlider);
+  detection_threshold = parseInt(settingInputs.thresholdSlider);*/
 }
 
 function getObsConnectionSettings() {
@@ -110,6 +110,7 @@ function getObsConnectionSettings() {
 }
 
 settingInputs.applyButton.onclick = function () {
+  console.log("apply clicked!");
   applyFaceSettings();
 };
 
