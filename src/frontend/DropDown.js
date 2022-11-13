@@ -38,6 +38,6 @@ DropDown.prototype.addChild = function(label, content) {
   let link = document.createElement('a');
   link.onclick = () => this.onItemSelected(content);
   link.innerHTML = label;
-  listitem.appendChild(link);
-  this.list.appendChild(listitem);
+  listItem.appendChild(link);
+  this.list.appendChild(listItem);
 };
