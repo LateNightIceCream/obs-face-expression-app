@@ -111,6 +111,7 @@ async function onWebcamDropDownClicked () {
 }
 
 function onWebcamDropDownItemSelected(item) {
+  console.log(item);
   app.setVideoDeviceId(item.content.deviceId);
 }
 
