@@ -1,10 +1,18 @@
 export class DropDown {
-  constructor(id) {
-    this.id = id;
-    this.parent = document.getElementById(this.id);
+  constructor(parentId, listId) {
+    this.parentId = parentId;
+    this.listId = listId;
+    this.parent = document.getElementById(this.parentId);
+    this.list = document.getElementById(this.listId);
+
     if (!this.parent) {
-      throw new Error('DropDown Element ' + this.id + ' does not exist!');
+      throw new Error('DropDown Parent Element ' + this.parentId + ' does not exist!');
     }
+
+    if (!this.list) {
+      throw new Error('DropDown List Element ' + this.listId + ' does not exist!');
+    }
+
     this.currentSelectedChild = null;
 
     this.onclick = () => {};
@@ -26,10 +34,10 @@ DropDown.prototype.clearChildren = function() {
 DropDown.prototype.addChild = function(label, content) {
   console.log(label);
   console.log(content);
-  let list = document.createElement('li');
+  let listItem = document.createElement('li');
   let link = document.createElement('a');
   link.onclick = () => this.onItemSelected(content);
   link.innerHTML = label;
-  list.appendChild(link);
-  this.parent.appendChild(list);
+  listitem.appendChild(link);
+  this.list.appendChild(listitem);
 };
