@@ -16,7 +16,6 @@ const settingInputs = {
   obsPortField: document.getElementById('obs-port-input'),
   obsPasswordField: document.getElementById('obs-password-input'),
   webcamDropDown: document.getElementById('webcam-dropdown'),
-  webcamList: document.getElementById('webcam-list'),
 };
 
 async function main() {
@@ -26,7 +25,6 @@ async function main() {
   if (!video || !canvas) return null;
 
   videoInputs = await enumerateVideoDevices();
-  //app.setVideoDeviceId(videoInputs[0].deviceId);
 
   app = new WebcamApp.WebcamApp(video, canvas);
 
@@ -52,9 +50,6 @@ async function main() {
   webcamDropDown.parent.onclick = onWebcamDropDownClicked;
   webcamDropDown.onItemSelected = onWebcamDropDownItemSelected;
 
-  /*video.oncanplay = function () {
-    app.pause();
-  };*/
 }
 
 async function enumerateVideoDevices() {
@@ -65,13 +60,6 @@ async function enumerateVideoDevices() {
     }
   });
   return devices;
-}
-
-function onWebcamSelected (device) {
-  return () => {
-    console.log(device.deviceId);
-    app.setVideoDeviceId(device.deviceId);
-  };
 }
 
 function applyFaceSettings() {
@@ -123,27 +111,8 @@ async function onWebcamDropDownClicked () {
 }
 
 function onWebcamDropDownItemSelected(item) {
-  console.log(item);
+  app.setVideoDeviceId(device.deviceId);
 }
-
-/*
-
-let webcamDropdown = new DropDown('webcam-dropdown');
-
-webcamDropDown.onclick = function() {
-  let videoDevices = enumerateVideoDevices();
-
-  videoDevices.forEach((device) => {
-    webCamDropDown.addChild(device.label, device);
-  });
-
-};
-
-webcamDropDown.onItemClicked = function(item) {
-  app.videoid = item.videoid;
-};
-
-*/
 
 // start processing as soon as page is loaded
 window.onload = main;

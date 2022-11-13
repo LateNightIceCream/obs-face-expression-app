@@ -8,23 +8,14 @@ class DropDownItem {
 
 /**
  * Example: DropDown structure in HTML:
- * <details role="list" id="parent-id">
- *    <summary araia-haspopup="listbox" id="summary-id">Placeholder<y>
- *    <ul role="listbox" id="list-id">
- *      <li><a>testitem 1</a></li>
- *      <li><a>testitem 2</a></li>
- *    </ul>
- *  </details>
+ * <details role="list" id="parent-id"></details>
  */
 export class DropDown {
-  constructor(parentId, summaryId, listId) {
-    this.parentId  = parentId;
-    this.listId    = listId;
-    this.summaryId = summaryId;
-
-    this.parent  = document.getElementById(this.parentId);
-    this.summary = null;
-    this.list    = null;
+  constructor(parentId) {
+    this.parentId = parentId;
+    this.parent   = document.getElementById(this.parentId);
+    this.summary  = null;
+    this.list     = null;
 
     if (!this.parent) {
       throw new Error('DropDown Parent Element ' + this.parentId + ' does not exist!');
@@ -78,8 +69,6 @@ DropDown.prototype.open = function() {
   * @param {Object} content Content that gets passed on click
   */
 DropDown.prototype.addChild = function(label, content) {
-  console.log(label);
-  console.log(content);
   let item = new DropDownItem(label, content);
   let listItem = document.createElement('li');
   let link = document.createElement('a');
