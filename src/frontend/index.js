@@ -3,6 +3,7 @@ import * as WebcamApp from './WebcamApp.js'
 let app;
 let detectionThreshold = 1;
 let videoInputs = [];
+let webCamDropDown;
 
 const settingInputs = {
   scoreSlider:  document.getElementById('score-slider'),
@@ -15,7 +16,7 @@ const settingInputs = {
   obsPasswordField: document.getElementById('obs-password-input'),
   webcamDropDown: document.getElementById('webcam-dropdown'),
   webcamList: document.getElementById('webcam-list'),
-}
+};
 
 async function main() {
 
@@ -46,6 +47,8 @@ async function main() {
     // TODO: face settings
   });
 
+  webcamDropdown = new DropDown('webcam-dropdown');
+
   /*video.oncanplay = function () {
     app.pause();
   };*/
@@ -68,7 +71,7 @@ function onWebcamSelected (device) {
   };
 }
 
-async function loadWebcamDropDown () {
+/*async function loadWebcamDropDown () {
   let devices = await enumerateVideoDevices();
   console.log(devices);
   clearList(settingInputs.webcamList);
@@ -76,7 +79,7 @@ async function loadWebcamDropDown () {
     let description = device.label;
     addWebcamToDropDown(settingInputs.webcamList, description, onWebcamSelected(device));
   });
-}
+}*/
 
 function addWebcamToDropDown(element, description, onclickCallback) {
   let item = document.createElement('li');
@@ -132,6 +135,36 @@ document.addEventListener('expression-detected', () => {
   }
 });
 
+webcamDropDown.onclick = function() {
+  let videoDevices = enumerateVideoDevices();
+  webcamDropDown.clearChildren();
+  videoDevices.forEach((device) => {
+    webCamDropDown.addChild(device.label, device);
+  });
+};
+
+webcamDropDown.onItemSelected = function (item) {
+  console.log(item);
+};
+
+/*
+
+let webcamDropdown = new DropDown('webcam-dropdown');
+
+webcamDropDown.onclick = function() {
+  let videoDevices = enumerateVideoDevices();
+
+  videoDevices.forEach((device) => {
+    webCamDropDown.addChild(device.label, device);
+  });
+
+};
+
+webcamDropDown.onItemClicked = function(item) {
+  app.videoid = item.videoid;
+};
+
+*/
 
 // start processing as soon as page is loaded
 window.onload = main;
