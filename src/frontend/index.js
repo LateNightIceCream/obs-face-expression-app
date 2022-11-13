@@ -111,7 +111,7 @@ async function onWebcamDropDownClicked () {
 }
 
 function onWebcamDropDownItemSelected(item) {
-  app.setVideoDeviceId(device.deviceId);
+  app.setVideoDeviceId(item.content.deviceId);
 }
 
 // start processing as soon as page is loaded
