@@ -21,8 +21,8 @@ export class DropDown {
 }
 
 DropDown.prototype.clearChildren = function() {
-  while(this.parent.firstChild) {
-    this.parent.removeChild(this.parent.firstChild);
+  while(this.list.firstChild) {
+    this.list.removeChild(this.list.firstChild);
   }
 };
 
