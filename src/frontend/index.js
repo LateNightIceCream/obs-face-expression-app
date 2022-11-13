@@ -48,7 +48,7 @@ async function main() {
     // TODO: face settings
   });
 
-  webcamDropDown = new DropDown.DropDown('webcam-dropdown', 'webcam-list');
+  webcamDropDown = new DropDown.DropDown('webcam-dropdown');
   webcamDropDown.parent.onclick = onWebcamDropDownClicked;
   webcamDropDown.onItemSelected = onWebcamDropDownItemSelected;
 
