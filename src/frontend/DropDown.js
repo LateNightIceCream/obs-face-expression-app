@@ -59,7 +59,7 @@ DropDown.prototype.clearChildren = function() {
 
 DropDown.prototype._onItemSelected = function(item) {
   this.summary.innerHTML = item.label;
-  this.onItemSelected(content);
+  this.onItemSelected(item.content);
   this.close();
 };
 
