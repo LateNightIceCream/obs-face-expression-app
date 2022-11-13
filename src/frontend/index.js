@@ -114,7 +114,7 @@ async function onWebcamDropDownClicked () {
   .then((devices) => {
     devices.forEach((device) => {
       webcamDropDown.clearChildren();
-      webCamDropDown.addChild(device.label, device);
+      webcamDropDown.addChild(device.label, device);
     });
   })
   .catch((error) => {
@@ -122,7 +122,7 @@ async function onWebcamDropDownClicked () {
   });
 }
 
-function onWebcamDropDownItemSelected () {
+function onWebcamDropDownItemSelected(item) {
   console.log(item);
 }
 
