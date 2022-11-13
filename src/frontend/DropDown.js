@@ -1,11 +1,4 @@
-class DropDownChild {
-  constructor(label, content) {
-    this.label = label;
-    this.content = content;
-  }
-}
-
-class DropDown {
+export class DropDown {
   constructor(id) {
     this.id = id;
     this.parent = document.getElementById(this.id);
@@ -13,15 +6,11 @@ class DropDown {
       throw new Error('DropDown Element ' + this.id + ' does not exist!');
     }
     this.currentSelectedChild = null;
-    this.initEventHandlers();
-  }
-  this.onclick = () => {};
-  this.onItemSelected = (item) => {};
-}
 
-DropDown.prototype.initEventHandlers = function() {
-  this.parent.onclick = this.onParentClicked;
-};
+    this.onclick = () => {};
+    this.onItemSelected = (item) => {};
+  }
+}
 
 DropDown.prototype.clearChildren = function() {
   while(this.parent.firstChild) {
@@ -35,7 +24,8 @@ DropDown.prototype.clearChildren = function() {
   * @param {Object} content Content that gets passed on click
   */
 DropDown.prototype.addChild = function(label, content) {
-  let child = DropDownChild(label, content);
+  console.log(label);
+  console.log(content);
   let list = document.createElement('li');
   let link = document.createElement('a');
   link.onclick = () => this.onItemSelected(content);

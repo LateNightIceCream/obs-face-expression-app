@@ -1,9 +1,10 @@
 import * as WebcamApp from './WebcamApp.js'
+import * as DropDown from './DropDown.js'
 
 let app;
 let detectionThreshold = 1;
 let videoInputs = [];
-let webCamDropDown;
+let webcamDropDown;
 
 const settingInputs = {
   scoreSlider:  document.getElementById('score-slider'),
@@ -47,7 +48,9 @@ async function main() {
     // TODO: face settings
   });
 
-  webcamDropdown = new DropDown('webcam-dropdown');
+  webcamDropDown = new DropDown.DropDown('webcam-dropdown');
+  webcamDropDown.parent.onclick = onWebcamDropDownClicked;
+  webcamDropDown.onItemSelected = onWebcamDropDownItemSelected;
 
   /*video.oncanplay = function () {
     app.pause();
@@ -69,31 +72,6 @@ function onWebcamSelected (device) {
     console.log(device.deviceId);
     app.setVideoDeviceId(device.deviceId);
   };
-}
-
-/*async function loadWebcamDropDown () {
-  let devices = await enumerateVideoDevices();
-  console.log(devices);
-  clearList(settingInputs.webcamList);
-  devices.forEach((device) => {
-    let description = device.label;
-    addWebcamToDropDown(settingInputs.webcamList, description, onWebcamSelected(device));
-  });
-}*/
-
-function addWebcamToDropDown(element, description, onclickCallback) {
-  let item = document.createElement('li');
-  let link = document.createElement('a');
-  link.onclick = onclickCallback;
-  link.innerHTML = description;
-  item.appendChild(link);
-  element.appendChild(item);
-}
-
-function clearList(element) {
-  while(element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
 }
 
 function applyFaceSettings() {
@@ -120,11 +98,6 @@ settingInputs.obsConnectButton.onclick = function () {
   window.electronAPI.sendObsConnectionSettings(settings);
 };
 
-settingInputs.webcamDropDown.onclick = function () {
-  loadWebcamDropDown();
-};
-
-
 document.addEventListener('expression-changed', () => {
 });
 
@@ -135,17 +108,23 @@ document.addEventListener('expression-detected', () => {
   }
 });
 
-webcamDropDown.onclick = function() {
-  let videoDevices = enumerateVideoDevices();
-  webcamDropDown.clearChildren();
-  videoDevices.forEach((device) => {
-    webCamDropDown.addChild(device.label, device);
+async function onWebcamDropDownClicked () {
+  console.log('hello!');
+  enumerateVideoDevices()
+  .then((devices) => {
+    devices.forEach((device) => {
+      webcamDropDown.clearChildren();
+      webCamDropDown.addChild(device.label, device);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
   });
-};
+}
 
-webcamDropDown.onItemSelected = function (item) {
+function onWebcamDropDownItemSelected () {
   console.log(item);
-};
+}
 
 /*
 
